@@ -1,0 +1,116 @@
+import fs from 'fs/promises';
+import path from 'path';
+import Link from 'next/link';
+import DeleteButton from '@/components/DeleteButton';
+
+import { supabase } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
+
+async function getLogData(id: string) {
+  try {
+    const { data: logs, error } = await supabase
+      .from('questions')
+      .select('*')
+      .order('created_at', { ascending: true });
+      
+    if (error || !logs) return null;
+    
+    const index = logs.findIndex((l: any) => l.id === id);
+    if (index === -1) return null;
+    
+    const prevId = index > 0 ? logs[index - 1].id : null;
+    const nextId = index < logs.length - 1 ? logs[index + 1].id : null;
+    
+    const dbLog = logs[index];
+    const frontendLog = {
+      id: dbLog.id,
+      code: dbLog.code,
+      paper: dbLog.paper,
+      topic: dbLog.topic,
+      subtopic: dbLog.subtopic,
+      reason: dbLog.reason,
+      imageUrl: dbLog.image_urls && dbLog.image_urls.length > 0 ? dbLog.image_urls[0] : '',
+      imageUrls: dbLog.image_urls,
+      createdAt: dbLog.created_at
+    };
+    
+    return { log: frontendLog, prevId, nextId };
+  } catch (error) {
+    return null;
+  }
+}
+
+export default async function QuestionPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const resolvedParams = await params;
+  const data = await getLogData(resolvedParams.id);
+
+  if (!data) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '5rem' }}>
+        <h2>Question not found</h2>
+        <Link href="/" className="btn" style={{ marginTop: '1rem' }}>Return to Dashboard</Link>
+      </div>
+    );
+  }
+
+  const { log, prevId, nextId } = data;
+
+  return (
+    <div className="question-page">
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <Link href="/" style={{ color: 'var(--text-secondary)' }}>&larr; Back to Dashboard</Link>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {prevId ? (
+            <Link href={`/question/${prevId}`} className="btn btn-secondary">
+              &larr; Prev
+            </Link>
+          ) : (
+            <button className="btn btn-secondary" style={{ opacity: 0.5, cursor: 'not-allowed' }} disabled>
+              &larr; Prev
+            </button>
+          )}
+          {nextId ? (
+            <Link href={`/question/${nextId}`} className="btn btn-secondary">
+              Next &rarr;
+            </Link>
+          ) : (
+            <button className="btn btn-secondary" style={{ opacity: 0.5, cursor: 'not-allowed' }} disabled>
+              Next &rarr;
+            </button>
+          )}
+          
+          {/* Add spacing between navigation and delete */}
+          <div style={{ marginLeft: '1rem' }}>
+            <DeleteButton id={log.id} />
+          </div>
+        </div>
+      </div>
+
+      <div className="question-header">
+        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <span className="tag">{log.paper}</span>
+          <span className="tag">{log.topic}</span>
+          <span className="tag">{log.subtopic}</span>
+        </div>
+        <h1 className="question-title">{log.code}</h1>
+        <p style={{ color: 'var(--text-secondary)' }}>Logged on {new Date(log.createdAt).toLocaleDateString()}</p>
+      </div>
+
+      <div className="question-image-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+        {log.imageUrls && log.imageUrls.length > 0 ? (
+          log.imageUrls.map((url: string, idx: number) => (
+            <img key={idx} src={url} alt={`${log.code} part ${idx + 1}`} className="question-image" />
+          ))
+        ) : (
+          <img src={log.imageUrl} alt={log.code} className="question-image" />
+        )}
+      </div>
+
+      <div className="question-reason-box">
+        <div className="question-reason-title">What went wrong</div>
+        <p>{log.reason}</p>
+      </div>
+    </div>
+  );
+}

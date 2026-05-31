@@ -1,0 +1,114 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { topics } from '@/lib/topics';
+import Link from 'next/link';
+
+export default function LogEntry() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [topic, setTopic] = useState(topics[0].name);
+
+  const selectedTopicObj = topics.find((t) => t.name === topic);
+  const availableSubtopics = selectedTopicObj ? selectedTopicObj.subtopics : [];
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      const res = await fetch('/api/logs', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        router.push(`/question/${data.log.id}`);
+      } else {
+        alert('Failed to save log entry');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <div style={{ marginBottom: '2rem' }}>
+        <Link href="/" style={{ color: 'var(--text-secondary)' }}>&larr; Back to Dashboard</Link>
+      </div>
+      
+      <div className="form-card">
+        <h2 style={{ marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 800 }}>Add New Question Log</h2>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="code">Question Code / Title</label>
+            <input type="text" id="code" name="code" className="form-control" required placeholder="e.g. q1" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="paper">Paper</label>
+            <select id="paper" name="paper" className="form-control" required>
+              <option value="Paper 2">Paper 2</option>
+              <option value="Paper 4">Paper 4</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="topic">Topic</label>
+            <select 
+              id="topic" 
+              name="topic" 
+              className="form-control" 
+              required
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+            >
+              {topics.map((t) => (
+                <option key={t.id} value={t.name}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="subtopic">Subtopic</label>
+            <select id="subtopic" name="subtopic" className="form-control" required>
+              {availableSubtopics.map((sub) => (
+                <option key={sub} value={sub}>{sub}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="image">Question Images (Select multiple if needed)</label>
+            <input type="file" id="image" name="image" accept="image/*" className="form-control" required style={{ padding: '0.5rem' }} multiple />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="reason">What went wrong?</label>
+            <textarea 
+              id="reason" 
+              name="reason" 
+              className="form-control" 
+              rows={4} 
+              required 
+              placeholder="Explain the mistake or reason for logging this question..."
+            ></textarea>
+          </div>
+
+          <button type="submit" className="btn" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+            {loading ? 'Saving...' : 'Save Question Log'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

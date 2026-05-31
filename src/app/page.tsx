@@ -1,66 +1,97 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { topics } from '@/lib/topics';
 
 export default function Home() {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [filterPaper, setFilterPaper] = useState('');
+  const [filterTopic, setFilterTopic] = useState('');
+  const [filterSubtopic, setFilterSubtopic] = useState('');
+
+  useEffect(() => {
+    fetch('/api/logs')
+      .then((res) => res.json())
+      .then((data) => setLogs(data.logs || []))
+      .catch((err) => console.error("Error fetching logs:", err));
+  }, []);
+
+  const selectedTopicObj = topics.find((t) => t.name === filterTopic);
+  const availableSubtopics = selectedTopicObj ? selectedTopicObj.subtopics : [];
+
+  const filteredLogs = logs.filter((log) => {
+    if (filterPaper && log.paper !== filterPaper) return false;
+    if (filterTopic && log.topic !== filterTopic) return false;
+    if (filterSubtopic && log.subtopic !== filterSubtopic) return false;
+    return true;
+  });
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      <div className="filters">
+        <div className="filter-group">
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Paper</label>
+          <select className="form-control" value={filterPaper} onChange={(e) => setFilterPaper(e.target.value)}>
+            <option value="">All Papers</option>
+            <option value="Paper 2">Paper 2</option>
+            <option value="Paper 4">Paper 4</option>
+          </select>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        
+        <div className="filter-group">
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Topic</label>
+          <select 
+            className="form-control" 
+            value={filterTopic} 
+            onChange={(e) => {
+              setFilterTopic(e.target.value);
+              setFilterSubtopic('');
+            }}
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <option value="">All Topics</option>
+            {topics.map((t) => (
+              <option key={t.id} value={t.name}>{t.name}</option>
+            ))}
+          </select>
         </div>
-      </main>
+
+        <div className="filter-group">
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Subtopic</label>
+          <select 
+            className="form-control" 
+            value={filterSubtopic} 
+            onChange={(e) => setFilterSubtopic(e.target.value)}
+            disabled={!filterTopic}
+          >
+            <option value="">All Subtopics</option>
+            {availableSubtopics.map((sub) => (
+              <option key={sub} value={sub}>{sub}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid">
+        {filteredLogs.length === 0 && (
+          <p style={{ color: 'var(--text-secondary)' }}>No questions found.</p>
+        )}
+        {filteredLogs.map((log) => (
+          <Link href={`/question/${log.id}`} key={log.id} className="card">
+            <div className="card-img-wrapper">
+              <img src={log.imageUrls && log.imageUrls.length > 0 ? log.imageUrls[0] : log.imageUrl} alt={log.code} className="card-img" />
+            </div>
+            <div className="card-body">
+              <h3 className="card-title">{log.code}</h3>
+              <div className="card-tags">
+                <span className="tag">{log.paper}</span>
+                <span className="tag">{log.topic}</span>
+              </div>
+              <p className="card-reason">{log.reason}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
