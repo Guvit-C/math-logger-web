@@ -80,8 +80,9 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
             </button>
           )}
           
-          {/* Add spacing between navigation and delete */}
-          <div style={{ marginLeft: '1rem' }}>
+          {/* Add spacing between navigation and actions */}
+          <div style={{ marginLeft: '1rem', display: 'flex', gap: '0.5rem' }}>
+            <Link href={`/edit/${log.id}`} className="btn" style={{ padding: '0.5rem 1rem', backgroundColor: 'var(--primary-color)' }}>Edit</Link>
             <DeleteButton id={log.id} />
           </div>
         </div>

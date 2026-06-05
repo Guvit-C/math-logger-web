@@ -43,3 +43,37 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const { code, paper, topic, subtopic, reason } = body;
+
+    if (!code || !paper || !topic || !subtopic) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from('questions')
+      .update({
+        code,
+        paper,
+        topic,
+        subtopic,
+        reason: reason || ''
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return NextResponse.json({ success: true, log: data });
+  } catch (error) {
+    console.error('Error updating log:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
