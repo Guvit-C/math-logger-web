@@ -3,7 +3,7 @@ import path from 'path';
 import Link from 'next/link';
 import DeleteButton from '@/components/DeleteButton';
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export const dynamic = 'force-dynamic';
 
