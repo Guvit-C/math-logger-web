@@ -9,6 +9,7 @@ export default function Home() {
   const [filterPaper, setFilterPaper] = useState('');
   const [filterTopic, setFilterTopic] = useState('');
   const [filterSubtopic, setFilterSubtopic] = useState('');
+  const [filterImportant, setFilterImportant] = useState(false);
 
   useEffect(() => {
     fetch('/api/logs')
@@ -24,6 +25,7 @@ export default function Home() {
     if (filterPaper && log.paper !== filterPaper) return false;
     if (filterTopic && log.topic !== filterTopic) return false;
     if (filterSubtopic && log.subtopic !== filterSubtopic) return false;
+    if (filterImportant && !log.isImportant) return false;
     return true;
   });
 
@@ -70,6 +72,18 @@ export default function Home() {
             ))}
           </select>
         </div>
+
+        <div className="filter-group" style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.5rem' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)', fontWeight: 600 }}>
+            <input 
+              type="checkbox" 
+              checked={filterImportant} 
+              onChange={(e) => setFilterImportant(e.target.checked)} 
+              style={{ width: '1.2rem', height: '1.2rem' }}
+            />
+            Important Only ⭐
+          </label>
+        </div>
       </div>
 
       <div className="grid">
@@ -82,7 +96,10 @@ export default function Home() {
               <img src={log.imageUrls && log.imageUrls.length > 0 ? log.imageUrls[0] : log.imageUrl} alt={log.code} className="card-img" />
             </div>
             <div className="card-body">
-              <h3 className="card-title">{log.code}</h3>
+              <h3 className="card-title">
+                {log.code}
+                {log.isImportant && <span style={{ marginLeft: '0.5rem', fontSize: '1rem' }}>⭐</span>}
+              </h3>
               <div className="card-tags">
                 <span className="tag">{log.paper}</span>
                 <span className="tag">{log.topic}</span>

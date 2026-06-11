@@ -29,6 +29,7 @@ export default async function EditPage({ params }: { params: Promise<{ id: strin
     topic: log.topic,
     subtopic: log.subtopic,
     reason: log.reason,
+    isImportant: log.is_important || false,
     imageUrls: log.image_urls
   };
 

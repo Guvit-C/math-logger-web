@@ -48,7 +48,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const { id } = await params;
     const body = await request.json();
-    const { code, paper, topic, subtopic, reason } = body;
+    const { code, paper, topic, subtopic, reason, isImportant } = body;
 
     if (!code || !paper || !topic || !subtopic) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -61,7 +61,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         paper,
         topic,
         subtopic,
-        reason: reason || ''
+        reason: reason || '',
+        is_important: isImportant
       })
       .eq('id', id)
       .select()

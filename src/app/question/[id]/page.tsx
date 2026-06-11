@@ -30,6 +30,7 @@ async function getLogData(id: string) {
       topic: dbLog.topic,
       subtopic: dbLog.subtopic,
       reason: dbLog.reason,
+      isImportant: dbLog.is_important || false,
       imageUrl: dbLog.image_urls && dbLog.image_urls.length > 0 ? dbLog.image_urls[0] : '',
       imageUrls: dbLog.image_urls,
       createdAt: dbLog.created_at
@@ -90,6 +91,7 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
 
       <div className="question-header">
         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          {log.isImportant && <span className="tag" style={{ backgroundColor: '#ff4757', color: 'white', border: 'none' }}>⭐ Very Important</span>}
           <span className="tag">{log.paper}</span>
           <span className="tag">{log.topic}</span>
           <span className="tag">{log.subtopic}</span>

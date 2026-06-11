@@ -15,6 +15,7 @@ export default function EditForm({ initialData }: { initialData: any }) {
   const [topic, setTopic] = useState(initialData.topic || topics[0].name);
   const [subtopic, setSubtopic] = useState(initialData.subtopic || topics[0].subtopics[0]);
   const [reason, setReason] = useState(initialData.reason || '');
+  const [isImportant, setIsImportant] = useState(initialData.isImportant || false);
 
   const selectedTopicObj = topics.find((t) => t.name === topic);
   const availableSubtopics = selectedTopicObj ? selectedTopicObj.subtopics : [];
@@ -30,7 +31,7 @@ export default function EditForm({ initialData }: { initialData: any }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code, paper, topic, subtopic, reason
+          code, paper, topic, subtopic, reason, isImportant
         }),
       });
 
@@ -118,6 +119,17 @@ export default function EditForm({ initialData }: { initialData: any }) {
                 <option key={sub} value={sub}>{sub}</option>
               ))}
             </select>
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', marginBottom: '1.5rem' }}>
+            <input 
+              type="checkbox" 
+              id="isImportant" 
+              checked={isImportant} 
+              onChange={(e) => setIsImportant(e.target.checked)} 
+              style={{ width: '1.5rem', height: '1.5rem', cursor: 'pointer' }} 
+            />
+            <label htmlFor="isImportant" style={{ marginBottom: 0, cursor: 'pointer', fontWeight: 600, color: '#ff4757' }}>⭐ Mark as Very Important (Lot of Mistakes)</label>
           </div>
 
           <div className="form-group">

@@ -87,6 +87,11 @@ export default function LogEntry() {
             </select>
           </div>
 
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', marginBottom: '1.5rem' }}>
+            <input type="checkbox" id="isImportant" name="isImportant" value="true" style={{ width: '1.5rem', height: '1.5rem', cursor: 'pointer' }} />
+            <label htmlFor="isImportant" style={{ marginBottom: 0, cursor: 'pointer', fontWeight: 600, color: '#ff4757' }}>⭐ Mark as Very Important (Lot of Mistakes)</label>
+          </div>
+
           <div className="form-group">
             <label htmlFor="image">Question Images (Select multiple if needed)</label>
             <input type="file" id="image" name="image" accept="image/*" className="form-control" required style={{ padding: '0.5rem' }} multiple />

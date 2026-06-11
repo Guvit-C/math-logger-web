@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     const topic = formData.get('topic') as string;
     const subtopic = formData.get('subtopic') as string;
     const reason = formData.get('reason') as string;
+    const isImportant = formData.get('isImportant') === 'true';
     const images = formData.getAll('image') as File[];
 
     if (!code || !paper || !topic || !subtopic || images.length === 0) {
@@ -53,7 +54,8 @@ export async function POST(request: Request) {
           topic,
           subtopic,
           reason: reason || '',
-          image_urls: imageUrls
+          image_urls: imageUrls,
+          is_important: isImportant
         }
       ])
       .select()
@@ -72,6 +74,7 @@ export async function POST(request: Request) {
       topic: insertData.topic,
       subtopic: insertData.subtopic,
       reason: insertData.reason,
+      isImportant: insertData.is_important || false,
       imageUrl: insertData.image_urls[0],
       imageUrls: insertData.image_urls,
       createdAt: insertData.created_at
@@ -101,6 +104,7 @@ export async function GET() {
       topic: d.topic,
       subtopic: d.subtopic,
       reason: d.reason,
+      isImportant: d.is_important || false,
       imageUrl: d.image_urls && d.image_urls.length > 0 ? d.image_urls[0] : '',
       imageUrls: d.image_urls,
       createdAt: d.created_at
