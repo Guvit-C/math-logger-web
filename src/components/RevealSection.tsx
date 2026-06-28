@@ -20,7 +20,7 @@ export default function RevealSection({
         className="btn"
         style={{ marginTop: '2rem', padding: '1rem 2rem', fontSize: '1.2rem', width: '100%', maxWidth: '500px', alignSelf: 'center' }}
       >
-        Reveal Explanation & Tags
+        {retryTag ? "Reveal Explanation & Retry Tag" : "Reveal Explanation"}
       </button>
     );
   }
