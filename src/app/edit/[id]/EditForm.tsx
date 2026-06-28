@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { topics } from '@/lib/topics';
 import Link from 'next/link';
+import { parseReasonAndTag, encodeReasonWithTag } from '@/lib/tagHelper';
 
 export default function EditForm({ initialData }: { initialData: any }) {
   const router = useRouter();
@@ -14,7 +15,16 @@ export default function EditForm({ initialData }: { initialData: any }) {
   const [paper, setPaper] = useState(initialData.paper || 'Paper 2');
   const [topic, setTopic] = useState(initialData.topic || topics[0].name);
   const [subtopic, setSubtopic] = useState(initialData.subtopic || topics[0].subtopics[0]);
-  const [reason, setReason] = useState(initialData.reason || '');
+  const [reason, setReason] = useState(() => {
+    // We parse the reason and tag here if initialData.reason is already loaded,
+    // but typically it's cleaner to parse and set initially.
+    const { actualReason } = parseReasonAndTag(initialData.reason || '');
+    return actualReason;
+  });
+  const [retryTag, setRetryTag] = useState(() => {
+    const { tag } = parseReasonAndTag(initialData.reason || '');
+    return tag;
+  });
   const [isImportant, setIsImportant] = useState(initialData.isImportant || false);
 
   const selectedTopicObj = topics.find((t) => t.name === topic);
@@ -31,7 +41,7 @@ export default function EditForm({ initialData }: { initialData: any }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code, paper, topic, subtopic, reason, isImportant
+          code, paper, topic, subtopic, reason: encodeReasonWithTag(reason, retryTag), isImportant
         }),
       });
 
@@ -142,6 +152,24 @@ export default function EditForm({ initialData }: { initialData: any }) {
               rows={5} 
               required 
             ></textarea>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="retryTag">Retry Status Tag</label>
+            <select 
+              id="retryTag" 
+              value={retryTag} 
+              onChange={(e) => setRetryTag(e.target.value)} 
+              className="form-control" 
+            >
+              <option value="">No Retry Tag</option>
+              <option value="Failed">Failed It ❌</option>
+              <option value="Silly Mistake">Silly Mistake 🤦</option>
+              <option value="Mastered">Mastered It 🎯</option>
+            </select>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+              Select a tag after retrying a question to mark your progress.
+            </p>
           </div>
 
           <button type="submit" className="btn" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>

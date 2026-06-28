@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { topics } from '@/lib/topics';
+import { stripTagFromReason } from '@/lib/tagHelper';
 
 export default function Home() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -104,7 +105,7 @@ export default function Home() {
                 <span className="tag">{log.paper}</span>
                 <span className="tag">{log.topic}</span>
               </div>
-              <p className="card-reason">{log.reason}</p>
+              <p className="card-reason">{stripTagFromReason(log.reason)}</p>
             </div>
           </Link>
         ))}

@@ -2,6 +2,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import Link from 'next/link';
 import DeleteButton from '@/components/DeleteButton';
+import RevealSection from '@/components/RevealSection';
+import { parseReasonAndTag } from '@/lib/tagHelper';
 
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
@@ -57,6 +59,17 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
 
   const { log, prevId, nextId } = data;
 
+  const { tag, actualReason } = parseReasonAndTag(log.reason);
+  
+  let tagExplanation = null;
+  if (tag === 'Failed') {
+    tagExplanation = "You failed this question during a retry. It means you still have conceptual gaps or significant difficulty. Review the topic fundamentally.";
+  } else if (tag === 'Mastered') {
+    tagExplanation = "You solved this question completely flawlessly on retry! Excellent work, you have mastered this concept.";
+  } else if (tag === 'Silly Mistake') {
+    tagExplanation = "You understood the concept but made a minor or careless error. Focus on being meticulous and double-checking your steps.";
+  }
+
   return (
     <div className="question-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -110,9 +123,12 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
         )}
       </div>
 
-      <div className="question-reason-box">
-        <div className="question-reason-title">What went wrong</div>
-        <p>{log.reason}</p>
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <RevealSection 
+          reason={actualReason} 
+          retryTag={tag} 
+          tagExplanation={tagExplanation} 
+        />
       </div>
     </div>
   );

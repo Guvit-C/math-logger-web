@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { topics } from '@/lib/topics';
 import Link from 'next/link';
+import ImagePasteZone from '@/components/ImagePasteZone';
 
 export default function LogEntry() {
   const router = useRouter();
@@ -92,10 +93,7 @@ export default function LogEntry() {
             <label htmlFor="isImportant" style={{ marginBottom: 0, cursor: 'pointer', fontWeight: 600, color: '#ff4757' }}>⭐ Mark as Very Important (Lot of Mistakes)</label>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="image">Question Images (Select multiple if needed)</label>
-            <input type="file" id="image" name="image" accept="image/*" className="form-control" required style={{ padding: '0.5rem' }} multiple />
-          </div>
+          <ImagePasteZone label="Question Images (Select or Paste)" name="image" required={true} />
 
           <div className="form-group">
             <label htmlFor="reason">What went wrong?</label>
