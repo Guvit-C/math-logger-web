@@ -7,9 +7,9 @@ export function encodeReasonWithTag(reason: string, tag: string) {
 
 export function parseReasonAndTag(reason: string): { tag: string; actualReason: string } {
   if (!reason) return { tag: '', actualReason: '' };
-  const match = reason.match(/^\[TAG:(.+?)\]\n([\s\S]*)$/);
+  const match = reason.match(/^\[TAG:(.+?)\](?:\r?\n([\s\S]*))?$/);
   if (match) {
-    return { tag: match[1], actualReason: match[2] };
+    return { tag: match[1], actualReason: match[2] || '' };
   }
   return { tag: '', actualReason: reason };
 }
