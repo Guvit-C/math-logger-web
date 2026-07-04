@@ -16,10 +16,6 @@ export default function WeaknessesDashboard() {
   const [newSubtopic, setNewSubtopic] = useState(topics[0].subtopics[0]);
   const [addingWeakness, setAddingWeakness] = useState(false);
   
-  // Note editing state
-  const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
-  const [editNotesContent, setEditNotesContent] = useState('');
-  
   // Attach question state
   const [attachingToId, setAttachingToId] = useState<string | null>(null);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>('');
@@ -89,22 +85,6 @@ export default function WeaknessesDashboard() {
       const res = await fetch(`/api/weaknesses/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setWeaknesses(weaknesses.filter((w) => w.id !== id));
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSaveNotes = async (id: string) => {
-    try {
-      const res = await fetch(`/api/weaknesses/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: editNotesContent }),
-      });
-      if (res.ok) {
-        setWeaknesses(weaknesses.map(w => w.id === id ? { ...w, notes: editNotesContent } : w));
-        setEditingNotesId(null);
       }
     } catch (err) {
       console.error(err);
@@ -222,39 +202,11 @@ export default function WeaknessesDashboard() {
                     <button onClick={() => handleDeleteWeakness(w.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>Delete</button>
                   </div>
                   
-                  {/* Notes Section */}
+                  {/* Notes Section Link */}
                   <div style={{ marginBottom: '2rem' }}>
-                    {editingNotesId === w.id ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <textarea 
-                          className="form-control" 
-                          value={editNotesContent} 
-                          onChange={(e) => setEditNotesContent(e.target.value)} 
-                          rows={6} 
-                          style={{ width: '100%', fontFamily: 'monospace' }} 
-                        />
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <button className="btn" onClick={() => handleSaveNotes(w.id)} style={{ padding: '0.5rem 1rem' }}>Save Notes</button>
-                          <button className="btn btn-secondary" onClick={() => setEditingNotesId(null)} style={{ padding: '0.5rem 1rem' }}>Cancel</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        {w.notes ? (
-                          <div style={{ backgroundColor: 'var(--bg-color)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid var(--border-color)', marginBottom: '0.5rem' }}>
-                            <MarkdownViewer content={w.notes} />
-                          </div>
-                        ) : (
-                          <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.9rem', marginBottom: '0.5rem' }}>No detailed notes.</p>
-                        )}
-                        <button 
-                          onClick={() => { setEditingNotesId(w.id); setEditNotesContent(w.notes || ''); }}
-                          style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.9rem', padding: 0 }}
-                        >
-                          ✎ Edit Notes
-                        </button>
-                      </div>
-                    )}
+                    <Link href={`/weaknesses/${w.id}`} className="btn" style={{ display: 'inline-block', backgroundColor: 'var(--bg-color)', color: 'var(--primary-color)', border: '1px solid var(--primary-color)' }}>
+                      📝 Open Obsidian Note
+                    </Link>
                   </div>
                   
                   {/* Attached Questions */}
