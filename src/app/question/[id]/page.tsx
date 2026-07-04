@@ -59,15 +59,18 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
 
   const { log, prevId, nextId } = data;
 
-  const { tag, actualReason } = parseReasonAndTag(log.reason);
+  const { tag, note, actualReason } = parseReasonAndTag(log.reason);
   
-  let tagExplanation = null;
-  if (tag === 'Failed') {
-    tagExplanation = "You failed this question during a retry. It means you still have conceptual gaps or significant difficulty. Review the topic fundamentally.";
-  } else if (tag === 'Mastered') {
-    tagExplanation = "You solved this question completely flawlessly on retry! Excellent work, you have mastered this concept.";
-  } else if (tag === 'Silly Mistake') {
-    tagExplanation = "You understood the concept but made a minor or careless error. Focus on being meticulous and double-checking your steps.";
+  let tagExplanation = note || null;
+  // Fallback explanations for old standard tags if no custom note is provided
+  if (!tagExplanation) {
+    if (tag === 'Failed') {
+      tagExplanation = "You failed this question during a retry. It means you still have conceptual gaps or significant difficulty. Review the topic fundamentally.";
+    } else if (tag === 'Mastered') {
+      tagExplanation = "You solved this question completely flawlessly on retry! Excellent work, you have mastered this concept.";
+    } else if (tag === 'Silly Mistake') {
+      tagExplanation = "You understood the concept but made a minor or careless error. Focus on being meticulous and double-checking your steps.";
+    }
   }
 
   return (

@@ -24,6 +24,10 @@ export default function EditForm({ initialData }: { initialData: any }) {
     const { tag } = parseReasonAndTag(initialData.reason || '');
     return tag;
   });
+  const [retryNote, setRetryNote] = useState(() => {
+    const { note } = parseReasonAndTag(initialData.reason || '');
+    return note;
+  });
   const [isImportant, setIsImportant] = useState(initialData.isImportant || false);
 
   const [existingImages, setExistingImages] = useState<string[]>(initialData.imageUrls || (initialData.imageUrl ? [initialData.imageUrl] : []));
@@ -45,7 +49,7 @@ export default function EditForm({ initialData }: { initialData: any }) {
       formData.append('paper', paper);
       formData.append('topic', topic);
       formData.append('subtopic', subtopic);
-      formData.append('reason', encodeReasonWithTag(reason, retryTag));
+      formData.append('reason', encodeReasonWithTag(reason, retryTag, retryNote));
       formData.append('isImportant', String(isImportant));
       formData.append('existingImages', JSON.stringify(existingImages));
 
@@ -186,10 +190,25 @@ export default function EditForm({ initialData }: { initialData: any }) {
               value={retryTag} 
               onChange={(e) => setRetryTag(e.target.value)} 
               className="form-control" 
-              placeholder='e.g., "Failed", "Silly Mistake", "Mastered", "Needs Review"'
+              placeholder='e.g., "Failed", "Silly Mistake", "Needs Review"'
             />
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-              Type a custom tag after retrying a question to mark your progress.
+              A short category name. This will be used in the dashboard dropdown to filter questions.
+            </p>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="retryNote">Retry Note / Explanation (Optional)</label>
+            <textarea 
+              id="retryNote" 
+              value={retryNote}
+              onChange={(e) => setRetryNote(e.target.value)}
+              className="form-control" 
+              rows={3} 
+              placeholder="Explain what happened during your retry in detail..."
+            ></textarea>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+              Use this for long explanations instead of cramping them into the short status tag.
             </p>
           </div>
 

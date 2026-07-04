@@ -36,12 +36,12 @@ export default function RevealSection({
               className="tag" 
               style={{ 
                 marginLeft: '1rem', 
-                backgroundColor: retryTag === 'Failed' ? '#fee2e2' : retryTag === 'Mastered' ? '#dcfce3' : '#fef9c3', 
-                color: retryTag === 'Failed' ? '#ef4444' : retryTag === 'Mastered' ? '#22c55e' : '#eab308', 
-                border: `1px solid ${retryTag === 'Failed' ? '#ef4444' : retryTag === 'Mastered' ? '#22c55e' : '#eab308'}` 
+                backgroundColor: retryTag === 'Failed' ? '#fee2e2' : retryTag === 'Mastered' ? '#dcfce3' : retryTag === 'Silly Mistake' ? '#fef9c3' : '#f3e8ff', 
+                color: retryTag === 'Failed' ? '#ef4444' : retryTag === 'Mastered' ? '#22c55e' : retryTag === 'Silly Mistake' ? '#eab308' : '#9333ea', 
+                border: `1px solid ${retryTag === 'Failed' ? '#ef4444' : retryTag === 'Mastered' ? '#22c55e' : retryTag === 'Silly Mistake' ? '#eab308' : '#d8b4fe'}` 
               }}
             >
-              {retryTag === 'Failed' ? '❌ Failed' : retryTag === 'Mastered' ? '🎯 Mastered' : '🤦 Silly Mistake'}
+              {retryTag === 'Failed' ? '❌ Failed' : retryTag === 'Mastered' ? '🎯 Mastered' : retryTag === 'Silly Mistake' ? '🤦 Silly Mistake' : retryTag}
             </span>
           )}
         </div>
@@ -50,9 +50,9 @@ export default function RevealSection({
         </div>
         
         {tagExplanation && (
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--border-color)' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--text-secondary)' }}>Tag Explanation:</h4>
-            <p style={{ fontSize: '0.95rem', color: 'var(--text-color)' }}>{tagExplanation}</p>
+          <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f8fafc', borderLeft: '4px solid #94a3b8', borderRadius: '0.25rem' }}>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Retry Note</h4>
+            <p style={{ fontSize: '1rem', margin: 0, color: '#334155', whiteSpace: 'pre-wrap' }}>{tagExplanation}</p>
           </div>
         )}
       </div>
