@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import MarkdownViewer from './MarkdownViewer';
 
 export default function RevealSection({ 
   reason, 
@@ -44,7 +45,9 @@ export default function RevealSection({
             </span>
           )}
         </div>
-        <p style={{ fontSize: '1.1rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{reason}</p>
+        <div style={{ fontSize: '1.1rem' }}>
+          <MarkdownViewer content={reason} />
+        </div>
         
         {tagExplanation && (
           <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--border-color)' }}>

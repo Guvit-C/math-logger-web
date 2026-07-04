@@ -13,9 +13,13 @@
     "@ai-sdk/react": "^3.0.210",
     "@supabase/supabase-js": "^2.106.2",
     "ai": "^6.0.208",
+    "katex": "^0.17.0",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { topic, subtopic, title } = body;
+    const { topic, subtopic, title, notes } = body;
 
     if (!topic || !subtopic || !title) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
           topic,
           subtopic,
           title,
+          notes: notes || '',
           question_ids: []
         }
       ])

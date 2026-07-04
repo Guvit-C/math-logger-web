@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { topics } from '@/lib/topics';
+import MarkdownViewer from '@/components/MarkdownViewer';
 
 export default function WeaknessesDashboard() {
   const [weaknesses, setWeaknesses] = useState<any[]>([]);
@@ -10,9 +11,14 @@ export default function WeaknessesDashboard() {
   const [filterTopic, setFilterTopic] = useState('');
   
   const [newTitle, setNewTitle] = useState('');
+  const [newNotes, setNewNotes] = useState('');
   const [newTopic, setNewTopic] = useState(topics[0].name);
   const [newSubtopic, setNewSubtopic] = useState(topics[0].subtopics[0]);
   const [addingWeakness, setAddingWeakness] = useState(false);
+  
+  // Note editing state
+  const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
+  const [editNotesContent, setEditNotesContent] = useState('');
   
   // Attach question state
   const [attachingToId, setAttachingToId] = useState<string | null>(null);
@@ -37,12 +43,13 @@ export default function WeaknessesDashboard() {
       const res = await fetch('/api/weaknesses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: newTopic, subtopic: newSubtopic, title: newTitle }),
+        body: JSON.stringify({ topic: newTopic, subtopic: newSubtopic, title: newTitle, notes: newNotes }),
       });
       if (res.ok) {
         const data = await res.json();
         setWeaknesses([data.weakness, ...weaknesses]);
         setNewTitle('');
+        setNewNotes('');
       } else {
         alert('Failed to add weakness');
       }
@@ -82,6 +89,22 @@ export default function WeaknessesDashboard() {
       const res = await fetch(`/api/weaknesses/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setWeaknesses(weaknesses.filter((w) => w.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveNotes = async (id: string) => {
+    try {
+      const res = await fetch(`/api/weaknesses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: editNotesContent }),
+      });
+      if (res.ok) {
+        setWeaknesses(weaknesses.map(w => w.id === id ? { ...w, notes: editNotesContent } : w));
+        setEditingNotesId(null);
       }
     } catch (err) {
       console.error(err);
@@ -150,8 +173,19 @@ export default function WeaknessesDashboard() {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Weakness Description</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Weakness Title</label>
             <input type="text" className="form-control" placeholder='e.g. "Forgetting integration by parts"' value={newTitle} onChange={(e) => setNewTitle(e.target.value)} required style={{ width: '100%' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Detailed Notes (Markdown & Math formatting supported)</label>
+            <textarea 
+              className="form-control" 
+              placeholder='Write down your exact mistakes, concepts to remember, etc. You can use markdown and math expressions like $x^2$.' 
+              value={newNotes} 
+              onChange={(e) => setNewNotes(e.target.value)} 
+              rows={6}
+              style={{ width: '100%' }} 
+            />
           </div>
           <div>
             <button type="submit" className="btn" disabled={addingWeakness}>
@@ -186,6 +220,41 @@ export default function WeaknessesDashboard() {
                       <h3 style={{ margin: '0 0 1rem 0' }}>{w.title}</h3>
                     </div>
                     <button onClick={() => handleDeleteWeakness(w.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>Delete</button>
+                  </div>
+                  
+                  {/* Notes Section */}
+                  <div style={{ marginBottom: '2rem' }}>
+                    {editingNotesId === w.id ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <textarea 
+                          className="form-control" 
+                          value={editNotesContent} 
+                          onChange={(e) => setEditNotesContent(e.target.value)} 
+                          rows={6} 
+                          style={{ width: '100%', fontFamily: 'monospace' }} 
+                        />
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button className="btn" onClick={() => handleSaveNotes(w.id)} style={{ padding: '0.5rem 1rem' }}>Save Notes</button>
+                          <button className="btn btn-secondary" onClick={() => setEditingNotesId(null)} style={{ padding: '0.5rem 1rem' }}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        {w.notes ? (
+                          <div style={{ backgroundColor: 'var(--bg-color)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid var(--border-color)', marginBottom: '0.5rem' }}>
+                            <MarkdownViewer content={w.notes} />
+                          </div>
+                        ) : (
+                          <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.9rem', marginBottom: '0.5rem' }}>No detailed notes.</p>
+                        )}
+                        <button 
+                          onClick={() => { setEditingNotesId(w.id); setEditNotesContent(w.notes || ''); }}
+                          style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.9rem', padding: 0 }}
+                        >
+                          ✎ Edit Notes
+                        </button>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Attached Questions */}

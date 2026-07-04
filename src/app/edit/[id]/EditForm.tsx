@@ -179,20 +179,17 @@ export default function EditForm({ initialData }: { initialData: any }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="retryTag">Retry Status Tag</label>
-            <select 
+            <label htmlFor="retryTag">Custom Retry Status Tag</label>
+            <input 
+              type="text"
               id="retryTag" 
               value={retryTag} 
               onChange={(e) => setRetryTag(e.target.value)} 
               className="form-control" 
-            >
-              <option value="">No Retry Tag</option>
-              <option value="Failed">Failed It ❌</option>
-              <option value="Silly Mistake">Silly Mistake 🤦</option>
-              <option value="Mastered">Mastered It 🎯</option>
-            </select>
+              placeholder='e.g., "Failed", "Silly Mistake", "Mastered", "Needs Review"'
+            />
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-              Select a tag after retrying a question to mark your progress.
+              Type a custom tag after retrying a question to mark your progress.
             </p>
           </div>
 

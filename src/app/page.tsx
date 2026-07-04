@@ -11,6 +11,7 @@ export default function Home() {
   const [filterTopic, setFilterTopic] = useState('');
   const [filterSubtopic, setFilterSubtopic] = useState('');
   const [filterImportant, setFilterImportant] = useState(false);
+  const [filterTag, setFilterTag] = useState('');
 
   useEffect(() => {
     fetch('/api/logs')
@@ -22,11 +23,21 @@ export default function Home() {
   const selectedTopicObj = topics.find((t) => t.name === filterTopic);
   const availableSubtopics = selectedTopicObj ? selectedTopicObj.subtopics : [];
 
+  const availableTags = Array.from(new Set(logs.map(log => {
+    const match = log.reason.match(/^\[TAG:(.+?)\](?:\r?\n([\s\S]*))?$/);
+    return match ? match[1] : null;
+  }).filter(Boolean))) as string[];
+
   const filteredLogs = logs.filter((log) => {
     if (filterPaper && log.paper !== filterPaper) return false;
     if (filterTopic && log.topic !== filterTopic) return false;
     if (filterSubtopic && log.subtopic !== filterSubtopic) return false;
     if (filterImportant && !log.isImportant) return false;
+    if (filterTag) {
+      const match = log.reason.match(/^\[TAG:(.+?)\](?:\r?\n([\s\S]*))?$/);
+      const tag = match ? match[1] : '';
+      if (tag !== filterTag) return false;
+    }
     return true;
   });
 
@@ -74,6 +85,20 @@ export default function Home() {
           </select>
         </div>
 
+        <div className="filter-group">
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Retry Tag</label>
+          <select 
+            className="form-control" 
+            value={filterTag} 
+            onChange={(e) => setFilterTag(e.target.value)}
+          >
+            <option value="">All Tags</option>
+            {availableTags.map((tag) => (
+              <option key={tag} value={tag}>{tag}</option>
+            ))}
+          </select>
+        </div>
+
         <div className="filter-group" style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.5rem' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)', fontWeight: 600 }}>
             <input 
@@ -104,6 +129,11 @@ export default function Home() {
               <div className="card-tags">
                 <span className="tag">{log.paper}</span>
                 <span className="tag">{log.topic}</span>
+                {(() => {
+                  const match = log.reason.match(/^\[TAG:(.+?)\](?:\r?\n([\s\S]*))?$/);
+                  const tag = match ? match[1] : null;
+                  return tag ? <span className="tag" style={{ backgroundColor: '#f3e8ff', color: '#9333ea', border: '1px solid #d8b4fe' }}>{tag}</span> : null;
+                })()}
               </div>
               <p className="card-reason">{stripTagFromReason(log.reason)}</p>
             </div>

@@ -5,10 +5,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, question_ids } = body;
+    const { title, notes, question_ids } = body;
 
     const updateData: any = {};
     if (title !== undefined) updateData.title = title;
+    if (notes !== undefined) updateData.notes = notes;
     if (question_ids !== undefined) updateData.question_ids = question_ids;
 
     const { data, error } = await supabase
