@@ -52,7 +52,9 @@ export default function RevealSection({
         {tagExplanation && (
           <div style={{ marginTop: '1.5rem', padding: '1.25rem', backgroundColor: 'rgba(168, 85, 247, 0.1)', borderLeft: '4px solid #a855f7', borderRadius: '0.5rem' }}>
             <h4 style={{ margin: '0 0 0.75rem 0', color: '#a855f7', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 800 }}>Retry Note</h4>
-            <p style={{ fontSize: '1rem', margin: 0, color: 'var(--text-primary)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{tagExplanation}</p>
+            <div style={{ marginTop: '1rem', color: 'var(--text-primary)', fontSize: '1rem' }}>
+              <MarkdownViewer content={tagExplanation} />
+            </div>
           </div>
         )}
       </div>

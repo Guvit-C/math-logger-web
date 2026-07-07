@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { topics } from '@/lib/topics';
 import { stripTagFromReason } from '@/lib/tagHelper';
+import MarkdownViewer from '@/components/MarkdownViewer';
 
 export default function Home() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -135,7 +136,7 @@ export default function Home() {
                   return tag ? <span className="tag" style={{ backgroundColor: '#f3e8ff', color: '#9333ea', border: '1px solid #d8b4fe' }}>{tag}</span> : null;
                 })()}
               </div>
-              <p className="card-reason">{stripTagFromReason(log.reason)}</p>
+              <MarkdownViewer content={stripTagFromReason(log.reason)} className="card-reason" />
             </div>
           </Link>
         ))}

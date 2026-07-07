@@ -6,9 +6,9 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 
-export default function MarkdownViewer({ content }: { content: string }) {
+export default function MarkdownViewer({ content, className = "markdown-content" }: { content: string, className?: string }) {
   return (
-    <div className="markdown-content" style={{ lineHeight: '1.6' }}>
+    <div className={className} style={{ lineHeight: '1.6' }}>
       <ReactMarkdown
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeKatex]}
