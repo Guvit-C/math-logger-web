@@ -3,6 +3,7 @@ import path from 'path';
 import Link from 'next/link';
 import DeleteButton from '@/components/DeleteButton';
 import RevealSection from '@/components/RevealSection';
+import RevisionTimeline from '@/components/RevisionTimeline';
 import { parseReasonAndTag } from '@/lib/tagHelper';
 
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
@@ -36,6 +37,7 @@ async function getLogData(id: string) {
       imageUrl: dbLog.image_urls && dbLog.image_urls.length > 0 ? dbLog.image_urls[0] : '',
       imageUrls: dbLog.image_urls,
       markSchemeUrls: dbLog.mark_scheme_urls || [],
+      revisionHistory: dbLog.revision_history || [],
       createdAt: dbLog.created_at
     };
     
@@ -127,13 +129,17 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'column', alignItems: 'center' }}>
         <RevealSection 
           reason={actualReason} 
           retryTag={tag} 
           tagExplanation={tagExplanation} 
           markSchemeUrls={log.markSchemeUrls}
         />
+        
+        <div style={{ width: '100%', maxWidth: '800px' }}>
+          <RevisionTimeline questionId={log.id} initialHistory={log.revisionHistory} />
+        </div>
       </div>
     </div>
   );
