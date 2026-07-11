@@ -194,7 +194,7 @@ export default async function QuestionDetail({ params, searchParams }: { params:
         />
         
         <div style={{ width: '100%', maxWidth: '800px' }}>
-          <RevisionTimeline questionId={log.id} initialHistory={log.revisionHistory} />
+          <RevisionTimeline key={log.id} questionId={log.id} initialHistory={log.revisionHistory} />
         </div>
       </div>
     </div>
