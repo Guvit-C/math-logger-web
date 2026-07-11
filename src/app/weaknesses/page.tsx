@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { topics } from '@/lib/topics';
 import MarkdownViewer from '@/components/MarkdownViewer';
+import MDEditor from '@uiw/react-md-editor';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+import 'katex/dist/katex.min.css';
 
 export default function WeaknessesDashboard() {
   const [weaknesses, setWeaknesses] = useState<any[]>([]);
@@ -158,14 +162,18 @@ export default function WeaknessesDashboard() {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Detailed Notes (Markdown & Math formatting supported)</label>
-            <textarea 
-              className="form-control" 
-              placeholder='Write down your exact mistakes, concepts to remember, etc. You can use markdown and math expressions like $x^2$.' 
-              value={newNotes} 
-              onChange={(e) => setNewNotes(e.target.value)} 
-              rows={6}
-              style={{ width: '100%' }} 
-            />
+            <div data-color-mode="dark">
+              <MDEditor
+                value={newNotes}
+                onChange={(val) => setNewNotes(val || '')}
+                preview="live"
+                height={400}
+                previewOptions={{
+                  remarkPlugins: [remarkMath],
+                  rehypePlugins: [rehypeKatex],
+                }}
+              />
+            </div>
           </div>
           <div>
             <button type="submit" className="btn" disabled={addingWeakness}>

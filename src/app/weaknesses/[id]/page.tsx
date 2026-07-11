@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownViewer from '@/components/MarkdownViewer';
+import MDEditor from '@uiw/react-md-editor';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+import 'katex/dist/katex.min.css';
 
 export default function WeaknessNotePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -89,26 +93,19 @@ export default function WeaknessNotePage({ params }: { params: Promise<{ id: str
 
       <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '2rem' }}>
         {isEditing ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <p style={{ color: 'var(--text-secondary)' }}>Use Markdown and KaTeX ($...$) to format your detailed mathematical notes.</p>
-            <textarea
-              value={editNotes}
-              onChange={(e) => setEditNotes(e.target.value)}
-              style={{
-                width: '100%',
-                minHeight: '600px',
-                padding: '1.5rem',
-                fontSize: '1rem',
-                fontFamily: 'monospace',
-                backgroundColor: 'var(--bg-color)',
-                color: 'var(--text-color)',
-                border: '1px solid var(--primary-color)',
-                borderRadius: '0.5rem',
-                resize: 'vertical'
-              }}
-              placeholder="Write your Obsidian-style notes here..."
-            />
-          </div>
+            <div data-color-mode="dark">
+              <MDEditor
+                value={editNotes}
+                onChange={(val) => setEditNotes(val || '')}
+                preview="live"
+                height={600}
+                previewOptions={{
+                  remarkPlugins: [remarkMath],
+                  rehypePlugins: [rehypeKatex],
+                }}
+                style={{ borderRadius: '0.5rem', overflow: 'hidden' }}
+              />
+            </div>
         ) : (
           <div className="obsidian-note-preview" style={{ 
             backgroundColor: 'var(--bg-color)', 
