@@ -8,6 +8,7 @@ import MDEditor from '@uiw/react-md-editor';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import 'katex/dist/katex.min.css';
+import { formatChatGPTMath } from '@/lib/formatMath';
 
 export default function WeaknessesDashboard() {
   const [weaknesses, setWeaknesses] = useState<any[]>([]);
@@ -165,7 +166,7 @@ export default function WeaknessesDashboard() {
             <div data-color-mode="dark">
               <MDEditor
                 value={newNotes}
-                onChange={(val) => setNewNotes(val || '')}
+                onChange={(val) => setNewNotes(formatChatGPTMath(val || ''))}
                 preview="live"
                 height={400}
                 previewOptions={{

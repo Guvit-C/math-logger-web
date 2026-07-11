@@ -8,6 +8,7 @@ import MDEditor from '@uiw/react-md-editor';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import 'katex/dist/katex.min.css';
+import { formatChatGPTMath } from '@/lib/formatMath';
 
 export default function WeaknessNotePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -96,7 +97,7 @@ export default function WeaknessNotePage({ params }: { params: Promise<{ id: str
             <div data-color-mode="dark">
               <MDEditor
                 value={editNotes}
-                onChange={(val) => setEditNotes(val || '')}
+                onChange={(val) => setEditNotes(formatChatGPTMath(val || ''))}
                 preview="live"
                 height={600}
                 previewOptions={{
