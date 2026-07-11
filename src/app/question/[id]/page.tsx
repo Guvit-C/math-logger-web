@@ -35,6 +35,7 @@ async function getLogData(id: string) {
       isImportant: dbLog.is_important || false,
       imageUrl: dbLog.image_urls && dbLog.image_urls.length > 0 ? dbLog.image_urls[0] : '',
       imageUrls: dbLog.image_urls,
+      markSchemeUrls: dbLog.mark_scheme_urls || [],
       createdAt: dbLog.created_at
     };
     
@@ -131,6 +132,7 @@ export default async function QuestionPage({ params }: { params: Promise<{ id: s
           reason={actualReason} 
           retryTag={tag} 
           tagExplanation={tagExplanation} 
+          markSchemeUrls={log.markSchemeUrls}
         />
       </div>
     </div>

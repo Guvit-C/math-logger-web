@@ -14,12 +14,15 @@ export async function POST(request: Request) {
     const isImportant = formData.get('isImportant') === 'true';
     const images = formData.getAll('image') as File[];
 
+    const markSchemeImages = formData.getAll('markScheme') as File[];
+    
     if (!code || !paper || !topic || !subtopic || images.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const imageUrls = [];
     for (let i = 0; i < images.length; i++) {
+      if (images[i].size === 0) continue;
       const image = images[i];
       const ext = image.name.split('.').pop() || 'png';
       const filename = `${code}_${Date.now()}_${i}.${ext}`;
@@ -44,6 +47,32 @@ export async function POST(request: Request) {
         
       imageUrls.push(publicUrlData.publicUrl);
     }
+    
+    // Process Mark Scheme images if any exist
+    const markSchemeUrls = [];
+    for (let i = 0; i < markSchemeImages.length; i++) {
+      if (markSchemeImages[i].size === 0) continue;
+      const image = markSchemeImages[i];
+      const ext = image.name.split('.').pop() || 'png';
+      const filename = `ms_${code}_${Date.now()}_${i}.${ext}`;
+      
+      const { error } = await supabase
+        .storage
+        .from('question-images')
+        .upload(filename, image, {
+          cacheControl: '3600',
+          upsert: false
+        });
+        
+      if (error) throw error;
+      
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('question-images')
+        .getPublicUrl(filename);
+        
+      markSchemeUrls.push(publicUrlData.publicUrl);
+    }
 
     const { data: insertData, error: insertError } = await supabase
       .from('questions')
@@ -55,6 +84,7 @@ export async function POST(request: Request) {
           subtopic,
           reason: reason || '',
           image_urls: imageUrls,
+          mark_scheme_urls: markSchemeUrls,
           is_important: isImportant
         }
       ])
@@ -107,6 +137,7 @@ export async function GET() {
       isImportant: d.is_important || false,
       imageUrl: d.image_urls && d.image_urls.length > 0 ? d.image_urls[0] : '',
       imageUrls: d.image_urls,
+      markSchemeUrls: d.mark_scheme_urls || [],
       createdAt: d.created_at
     }));
 

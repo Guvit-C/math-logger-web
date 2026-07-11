@@ -94,6 +94,7 @@ export default function LogEntry() {
           </div>
 
           <ImagePasteZone label="Question Images (Select or Paste)" name="image" required={true} />
+          <ImagePasteZone label="Mark Scheme Images (Optional)" name="markScheme" required={false} />
 
           <div className="form-group">
             <label htmlFor="reason">What went wrong?</label>

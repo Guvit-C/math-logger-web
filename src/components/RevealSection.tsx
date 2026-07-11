@@ -6,11 +6,13 @@ import MarkdownViewer from './MarkdownViewer';
 export default function RevealSection({ 
   reason, 
   retryTag, 
-  tagExplanation 
+  tagExplanation,
+  markSchemeUrls
 }: { 
   reason: string; 
   retryTag: string; 
   tagExplanation: string | null;
+  markSchemeUrls?: string[];
 }) {
   const [revealed, setRevealed] = useState(false);
 
@@ -54,6 +56,17 @@ export default function RevealSection({
             <h4 style={{ margin: '0 0 0.75rem 0', color: '#a855f7', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 800 }}>Retry Note</h4>
             <div style={{ marginTop: '1rem', color: 'var(--text-primary)', fontSize: '1rem' }}>
               <MarkdownViewer content={tagExplanation} />
+            </div>
+          </div>
+        )}
+        
+        {markSchemeUrls && markSchemeUrls.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <h4 style={{ color: 'var(--text-secondary)', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Mark Scheme</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+              {markSchemeUrls.map((url, idx) => (
+                <img key={idx} src={url} alt={`Mark Scheme ${idx + 1}`} className="question-image" />
+              ))}
             </div>
           </div>
         )}
