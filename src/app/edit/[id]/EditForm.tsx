@@ -20,6 +20,8 @@ export default function EditForm({ initialData }: { initialData: any }) {
     const { actualReason } = parseReasonAndTag(initialData.reason || '');
     return actualReason;
   });
+  const [category, setCategory] = useState(initialData.difficultyTag || 'Normal');
+  const [difficultyDescription, setDifficultyDescription] = useState(initialData.difficultyDescription || '');
   const [retryTag, setRetryTag] = useState(() => {
     const { tag } = parseReasonAndTag(initialData.reason || '');
     return tag;
@@ -52,6 +54,14 @@ export default function EditForm({ initialData }: { initialData: any }) {
       formData.append('reason', encodeReasonWithTag(reason, retryTag, retryNote));
       formData.append('isImportant', String(isImportant));
       formData.append('existingImages', JSON.stringify(existingImages));
+
+      if (category !== 'Normal') {
+        formData.append('difficultyTag', category);
+        formData.append('difficultyDescription', difficultyDescription);
+      } else {
+        formData.append('difficultyTag', '');
+        formData.append('difficultyDescription', '');
+      }
 
       const res = await fetch(`/api/logs/${initialData.id}`, {
         method: 'PATCH',
@@ -171,7 +181,36 @@ export default function EditForm({ initialData }: { initialData: any }) {
           <ImagePasteZone label="Add New Question Images (Optional)" name="new_image" required={false} />
 
           <div className="form-group" style={{ marginTop: '2rem' }}>
-            <label htmlFor="reason">What went wrong?</label>
+            <label htmlFor="category">Question Category</label>
+            <select 
+              id="category" 
+              className="form-control" 
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="Normal">Standard Mistake</option>
+              <option value="HARD">HARD (Above current level)</option>
+              <option value="DEP">DEP (Requires future knowledge)</option>
+            </select>
+          </div>
+
+          {category !== 'Normal' && (
+            <div className="form-group">
+              <label htmlFor="difficultyDescription">Short Description (5-7 words)</label>
+              <input 
+                type="text" 
+                id="difficultyDescription" 
+                className="form-control" 
+                value={difficultyDescription}
+                onChange={(e) => setDifficultyDescription(e.target.value)}
+                required={category !== 'Normal'} 
+                placeholder="e.g. Requires trigonometry to solve" 
+              />
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="reason">{category === 'Normal' ? 'What went wrong?' : 'Explanation'}</label>
             <textarea 
               id="reason" 
               value={reason}

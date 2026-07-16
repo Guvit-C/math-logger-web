@@ -14,11 +14,20 @@ export default function LogEntry() {
   const selectedTopicObj = topics.find((t) => t.name === topic);
   const availableSubtopics = selectedTopicObj ? selectedTopicObj.subtopics : [];
 
+  const [category, setCategory] = useState('Normal');
+  const [difficultyDescription, setDifficultyDescription] = useState('');
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    
+    // Inject difficulty fields into formData
+    if (category !== 'Normal') {
+      formData.append('difficultyTag', category);
+      formData.append('difficultyDescription', difficultyDescription);
+    }
     
     try {
       const res = await fetch('/api/logs', {
@@ -97,14 +106,43 @@ export default function LogEntry() {
           <ImagePasteZone label="Mark Scheme Images (Optional)" name="markScheme" required={false} />
 
           <div className="form-group">
-            <label htmlFor="reason">What went wrong?</label>
+            <label htmlFor="category">Question Category</label>
+            <select 
+              id="category" 
+              className="form-control" 
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="Normal">Standard Mistake</option>
+              <option value="HARD">HARD (Above current level)</option>
+              <option value="DEP">DEP (Requires future knowledge)</option>
+            </select>
+          </div>
+
+          {category !== 'Normal' && (
+            <div className="form-group">
+              <label htmlFor="difficultyDescription">Short Description (5-7 words)</label>
+              <input 
+                type="text" 
+                id="difficultyDescription" 
+                className="form-control" 
+                value={difficultyDescription}
+                onChange={(e) => setDifficultyDescription(e.target.value)}
+                required={category !== 'Normal'} 
+                placeholder="e.g. Requires trigonometry to solve" 
+              />
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="reason">{category === 'Normal' ? 'What went wrong?' : 'Explanation'}</label>
             <textarea 
               id="reason" 
               name="reason" 
               className="form-control" 
               rows={4} 
               required 
-              placeholder="Explain the mistake or reason for logging this question..."
+              placeholder={category === 'Normal' ? "Explain the mistake or reason for logging this question..." : "Explain why you failed or need to retry this..."}
             ></textarea>
           </div>
 

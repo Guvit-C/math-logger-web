@@ -71,6 +71,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const topic = formData.get('topic') as string;
     const subtopic = formData.get('subtopic') as string;
     const reason = formData.get('reason') as string;
+    const difficultyTag = formData.get('difficultyTag') as string;
+    const difficultyDescription = formData.get('difficultyDescription') as string;
     const isImportant = formData.get('isImportant') === 'true';
     
     const existingImagesStr = formData.get('existingImages') as string;
@@ -106,6 +108,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         topic,
         subtopic,
         reason: reason || '',
+        difficulty_tag: difficultyTag || null,
+        difficulty_description: difficultyDescription || null,
         is_important: isImportant,
         image_urls: imageUrls
       })

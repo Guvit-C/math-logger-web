@@ -11,6 +11,8 @@ export async function POST(request: Request) {
     const topic = formData.get('topic') as string;
     const subtopic = formData.get('subtopic') as string;
     const reason = formData.get('reason') as string;
+    const difficultyTag = formData.get('difficultyTag') as string;
+    const difficultyDescription = formData.get('difficultyDescription') as string;
     const isImportant = formData.get('isImportant') === 'true';
     const images = formData.getAll('image') as File[];
 
@@ -83,6 +85,8 @@ export async function POST(request: Request) {
           topic,
           subtopic,
           reason: reason || '',
+          difficulty_tag: difficultyTag || null,
+          difficulty_description: difficultyDescription || null,
           image_urls: imageUrls,
           mark_scheme_urls: markSchemeUrls,
           is_important: isImportant
@@ -139,6 +143,8 @@ export async function GET() {
       imageUrls: d.image_urls,
       markSchemeUrls: d.mark_scheme_urls || [],
       revisionHistory: d.revision_history || [],
+      difficultyTag: d.difficulty_tag || null,
+      difficultyDescription: d.difficulty_description || null,
       createdAt: d.created_at
     }));
 
